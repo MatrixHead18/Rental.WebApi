@@ -14,4 +14,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Administrator\Adapters\NovaPasta\" />
+    <Folder Include="Features\Administrator\Application\" />
+    <Folder Include="Features\Administrator\Controllers\" />
+    <Folder Include="Features\Administrator\Domain\Events\" />
+    <Folder Include="Features\Administrator\Domain\Services\" />
+    <Folder Include="Features\Deliveryman\" />
+  </ItemGroup>
+
 </Project>

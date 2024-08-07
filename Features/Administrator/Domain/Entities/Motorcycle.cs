@@ -1,8 +1,10 @@
-﻿using Rental.WebApi.Shared.Domain;
+﻿using Rental.WebApi.Shared.Data.Attributes;
+using Rental.WebApi.Shared.Domain;
 
 namespace Rental.WebApi.Features.Administrator.Domain.Entities
 {
-    public class Motorcycle : EntityModel
+    [BsonCollection("Motorcyles")]
+    public class Motorcycle : MongoDbDocument
     {
         public Motorcycle(DateOnly year, string model, string licensePlate)
         {
@@ -26,5 +28,11 @@ namespace Rental.WebApi.Features.Administrator.Domain.Entities
 
         public override int GetHashCode()
             => HashCode.Combine(LicensePlate, Model);
+
+        public Motorcycle UpdateMotorcycle(string licensePlate)
+        {
+            LicensePlate = licensePlate;
+            return this;
+        }
     }
 }

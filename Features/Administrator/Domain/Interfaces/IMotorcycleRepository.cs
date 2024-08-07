@@ -4,8 +4,6 @@ namespace Rental.WebApi.Features.Administrator.Domain.Interfaces
 {
     public interface IMotorcycleRepository
     {
-        Task CreateMotorcycle(Motorcycle motorcycle);
-        Task UpdateMotorcycle(Motorcycle motorcycle);
-        Task RemoveMotorcycle(Guid motorcycleId);
+        Task UpdateMotorcycleAsync(Motorcycle motorcycle, CancellationToken cancellationToken);
     }
 }

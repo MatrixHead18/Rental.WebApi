@@ -53,8 +53,8 @@ namespace Rental.WebApi.Shared.Data.Repositories
             return await result.ToListAsync(cancellationToken);
         }
 
-        public async Task InsertOneAsync(TDocument document)
-            => await Collection.InsertOneAsync(document);
+        public async Task InsertOneAsync(TDocument document, CancellationToken cancellationToken)
+            => await Collection.InsertOneAsync(document, cancellationToken: cancellationToken);
 
         public async Task UpdateOneAsync(Expression<Func<TDocument, bool>> expression, UpdateDefinition<TDocument> document, UpdateOptions options, CancellationToken cancellationToken = default)
             => await Collection.UpdateOneAsync(expression, document, options, cancellationToken: cancellationToken);

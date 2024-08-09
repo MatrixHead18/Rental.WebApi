@@ -5,7 +5,7 @@ namespace Rental.WebApi.Shared.Data.Interfaces
 {
     public interface IRepositoryBase<TDocument> where TDocument : IMongoDbDocument
     {
-        Task InsertOneAsync(TDocument document);
+        Task InsertOneAsync(TDocument document, CancellationToken cancellationToken);
         Task<TDocument?> FindOneAsync(Expression<Func<TDocument, bool>> expression, CancellationToken cancellationToken);
         Task<TDocument> FindByIdAsync(string id, CancellationToken cancellationToken);
         Task<IEnumerable<TDocument>> GetAllAsync(Expression<Func<TDocument, bool>>? filter = null, CancellationToken cancellationToken = default);

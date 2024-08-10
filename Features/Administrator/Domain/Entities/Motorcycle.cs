@@ -13,9 +13,9 @@ namespace Rental.WebApi.Features.Administrator.Domain.Entities
             LicensePlate = licensePlate;
         }
 
-        public DateOnly Year { get; set; }
-        public string Model { get; set; } = string.Empty;
-        public string LicensePlate { get; set; } = string.Empty;
+        public DateOnly Year { get; private set; }
+        public string Model { get; private set; } = string.Empty;
+        public string LicensePlate { get; private set; } = string.Empty;
 
         public override bool Equals(object? other)
         {

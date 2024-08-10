@@ -6,6 +6,9 @@ namespace Rental.WebApi.Features.Administrator.Application.Interfaces
     public interface IAdministratorServices
     {
         Task CreateMotorcycleAsync(CreateNewMotorcycleRequest model, CancellationToken cancellationToken = default);
-        Task<IEnumerable<MotorcycleResponse>> GetMotorcyclesAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<MotorcycleResponse>> GetAllMotorcyclesAsync(CancellationToken cancellationToken = default);
+        Task<MotorcycleResponse> GetMotorcycleByIdAsync(string id, CancellationToken cancellationToken = default);
+        Task UpdateMotorcycleAsync(UpdateMotorcycleRequest model, CancellationToken cancellationToken = default);
+        Task DeleteMotorcycleAsync(string id, CancellationToken cancellationToken = default);
     }
 }

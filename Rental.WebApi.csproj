@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Deliveryman\" />
+    <Folder Include="Features\Deliveryman\Domain\Entities\" />
   </ItemGroup>
 
 </Project>

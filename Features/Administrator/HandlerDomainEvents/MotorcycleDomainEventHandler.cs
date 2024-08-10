@@ -1,11 +1,12 @@
-﻿using Rental.WebApi.Features.Administrator.Domain.Entities;
+﻿using MediatR;
+using Rental.WebApi.Features.Administrator.Domain.Entities;
 using Rental.WebApi.Features.Administrator.Domain.Events.ModelEvents;
 using Rental.WebApi.Features.Administrator.Domain.Interfaces;
 using Rental.WebApi.Shared.MessageBus.Interfaces;
 
 namespace Rental.WebApi.Features.Administrator.HandlerDomainEvents
 {
-    public class MotorcycleDomainEventHandler : BackgroundService
+    public class MotorcycleDomainEventHandler : INotificationHandler<MotorcycleCreatedEvent>
     {
         private readonly IMessageBusService _bus;
         private readonly ILogger<MotorcycleDomainEventHandler> _logger;
@@ -21,19 +22,6 @@ namespace Rental.WebApi.Features.Administrator.HandlerDomainEvents
             _motorcycleRepository = motorcycleRepository;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            SetSubscriber(stoppingToken);
-
-            return Task.CompletedTask;
-        }
-
-        private void SetSubscriber(CancellationToken stoppingToken)
-        {
-            _bus.SubscribeAsync<MotorcycleCreatedEvent>(
-                    "CreateMotorcycle", async request => await InsertMotorcycleAsync(request, stoppingToken));
-        }
-
         private async Task InsertMotorcycleAsync(MotorcycleCreatedEvent request, CancellationToken stoppingToken)
         {
             _logger.LogInformation("Inserting a new motorcycle in database...");
@@ -43,6 +31,14 @@ namespace Rental.WebApi.Features.Administrator.HandlerDomainEvents
             await _motorcycleRepository.InsertOneAsync(motorcycle, stoppingToken);
 
             _logger.LogInformation("Create motorcycle successfull in database...");
+        }
+
+        public Task Handle(MotorcycleCreatedEvent notification, CancellationToken cancellationToken)
+        {
+            _bus.SubscribeAsync<MotorcycleCreatedEvent>(
+                "CreateMotorcycle", async => InsertMotorcycleAsync(notification, cancellationToken));
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -2,7 +2,6 @@
 using Rental.WebApi.Features.Administrator.Application.Interfaces;
 using Rental.WebApi.Features.Administrator.Application.Models.Requests;
 using Rental.WebApi.Features.Administrator.Application.Models.Responses;
-using Rental.WebApi.Features.Administrator.Domain.Entities;
 using Rental.WebApi.Features.Administrator.Domain.Events.ModelEvents;
 using Rental.WebApi.Features.Administrator.Domain.Interfaces;
 
@@ -36,11 +35,11 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
             _logger.LogInformation("Message event sent successfull.");
         }
 
-        public async Task DeleteMotorcycleAsync(string id, CancellationToken cancellationToken = default)
+        public async Task DeleteMotorcycleAsync(Guid id, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Deleting motorcycle from database...");
 
-            var motorcycle = await _motorcycleRepository.FindByIdAsync(id, cancellationToken: cancellationToken);
+            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == id, cancellationToken: cancellationToken);
 
             if (motorcycle is null)
             {
@@ -52,9 +51,9 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
             await _motorcycleRepository.DeleteOneAsync(motorcycle);
         }
 
-        public async Task<MotorcycleResponse> GetMotorcycleByIdAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<MotorcycleResponse> GetMotorcycleByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var motorcycle = await _motorcycleRepository.FindByIdAsync(id, cancellationToken: cancellationToken);
+            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == id, cancellationToken: cancellationToken);
 
             if (motorcycle is null)
             {
@@ -87,11 +86,11 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
             });
         }
 
-        public async Task UpdateMotorcycleAsync(UpdateMotorcycleRequest model, CancellationToken cancellationToken = default)
+        public async Task UpdateMotorcycleAsync(UpdateMotorcycleRequest request, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Updating motorcycle with id: {id}...", model.Id);
+            _logger.LogInformation("Updating motorcycle with id: {id}...", request.Id);
 
-            var motorcycle = await _motorcycleRepository.FindByIdAsync(model.Id, cancellationToken: cancellationToken);
+            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == request.Id, cancellationToken: cancellationToken);
 
             if (motorcycle is null) 
             {
@@ -100,9 +99,9 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
                 throw new InvalidOperationException();
             }
 
-            motorcycle.UpdateMotorcycle(model.LicensaPlate);
+            motorcycle.UpdateMotorcycle(request.LicensaPlate);
 
-            await _motorcycleRepository.UpdateMotorcycleAsync(motorcycle, cancellationToken: cancellationToken);
+            await _motorcycleRepository.UpdateOneAsync(motorcycle);
         }
     }
 }

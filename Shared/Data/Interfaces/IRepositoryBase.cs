@@ -1,15 +1,15 @@
-﻿using MongoDB.Driver;
+﻿using Rental.WebApi.Shared.Domain.Interfaces;
 using System.Linq.Expressions;
 
 namespace Rental.WebApi.Shared.Data.Interfaces
 {
-    public interface IRepositoryBase<TDocument> where TDocument : IMongoDbDocument
+    public interface IRepositoryBase<TEntity> where TEntity : IEntityModel
     {
-        Task InsertOneAsync(TDocument document, CancellationToken cancellationToken);
-        Task<TDocument?> FindOneAsync(Expression<Func<TDocument, bool>> expression, CancellationToken cancellationToken);
-        Task<TDocument> FindByIdAsync(string id, CancellationToken cancellationToken);
-        Task<IEnumerable<TDocument>> GetAllAsync(Expression<Func<TDocument, bool>>? filter = null, CancellationToken cancellationToken = default);
-        Task UpdateOneAsync(Expression<Func<TDocument, bool>> expression, UpdateDefinition<TDocument> document, UpdateOptions options, CancellationToken cancellationToken = default);
-        Task DeleteOneAsync(TDocument document, CancellationToken cancellationToken = default);
+        public IUnitOfWork UnitOfWork { get; }
+        Task<TEntity> InsertOneAsync(TEntity document, CancellationToken cancellationToken);
+        Task<TEntity?> FindByIdAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
+        Task UpdateOneAsync(TEntity entity, CancellationToken cancellationToken = default);
+        Task DeleteOneAsync(TEntity entity, CancellationToken cancellationToken = default);
     }
 }

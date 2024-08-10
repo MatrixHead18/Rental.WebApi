@@ -5,6 +5,5 @@ namespace Rental.WebApi.Features.Administrator.Domain.Interfaces
 {
     public interface IMotorcycleRepository : IRepositoryBase<Motorcycle>
     {
-        Task UpdateMotorcycleAsync(Motorcycle motorcycle, CancellationToken cancellationToken);
     }
 }

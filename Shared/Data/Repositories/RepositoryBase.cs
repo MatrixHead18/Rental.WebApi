@@ -1,62 +1,69 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using Rental.WebApi.Shared.Data.Attributes;
+﻿using Microsoft.EntityFrameworkCore;
 using Rental.WebApi.Shared.Data.Interfaces;
+using Rental.WebApi.Shared.Domain;
 using System.Linq.Expressions;
 
 namespace Rental.WebApi.Shared.Data.Repositories
 {
-    public class RepositoryBase<TDocument> : IRepositoryBase<TDocument> where TDocument : IMongoDbDocument
+    public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : EntityModel
     {
-        protected IMongoCollection<TDocument> Collection { get; init; }
+        private DatabaseContext DatabaseContext;
 
-        public RepositoryBase(IMongoDatabase mongoDatabase)
+        public RepositoryBase(DatabaseContext context)
         {
-            Collection = mongoDatabase.GetCollection<TDocument>(
-                name: RepositoryBase<TDocument>.GetCollectionName(typeof(TDocument))
-            );
+            DatabaseContext = context;
         }
 
-        private static string GetCollectionName(Type documentType)
+        public IUnitOfWork UnitOfWork => DatabaseContext;
+
+        public async Task DeleteOneAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
-            var attributes = documentType.GetCustomAttributes(typeof(BsonCollectionAttribute), true);
+            var entitySet = DatabaseContext.Set<TEntity>();
+            var trackedEntity = DatabaseContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x=> x.Entity.Id == entity.Id);
+            if (trackedEntity != null)
+                DatabaseContext.Entry(trackedEntity.Entity).State = EntityState.Detached;
 
-            if(attributes is not null)
-            {
-                var attribute = attributes.FirstOrDefault() as BsonCollectionAttribute;
+            entitySet.Attach(entity);
 
-                return attribute?.CollectionName ?? documentType.Name;
-            }
+            await UnitOfWork.SaveChangesAsync();
+        }
+            
+        public async Task<TEntity?> FindByIdAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken =default)
+        {
+            IQueryable<TEntity> query = DatabaseContext.Set<TEntity>().AsQueryable();
 
-            return string.Empty;
+            query = query.Where(filter!);
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-
-        public async Task DeleteOneAsync(TDocument document, CancellationToken cancellationToken = default)
-            => await Collection.DeleteOneAsync(doc => doc.Id == document.Id, cancellationToken);
-
-        public async Task<TDocument> FindByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default)
         {
-            var objectId = new ObjectId(id);
-            var result = await Collection.FindAsync<TDocument>(f => f.Id == objectId, cancellationToken: cancellationToken);
+            IQueryable<TEntity> query = DatabaseContext.Set<TEntity>().AsQueryable(); 
 
-            return await result.FirstOrDefaultAsync(cancellationToken);
+            query = query.Where(filter!);
+            query = query.AsNoTracking();
+
+            return await query.ToListAsync(cancellationToken);
         }
 
-        public async Task<TDocument?> FindOneAsync(Expression<Func<TDocument, bool>> expression, CancellationToken cancellationToken)
-            => await Collection.Find(expression).FirstOrDefaultAsync(cancellationToken);
-
-        public async Task<IEnumerable<TDocument>> GetAllAsync(Expression<Func<TDocument, bool>>? filter = null, CancellationToken cancellationToken = default)
+        public async Task<TEntity> InsertOneAsync(TEntity entity, CancellationToken cancellationToken)
         {
-            var result = await Collection.FindAsync<TDocument>(filter => true, cancellationToken: cancellationToken);
+            var entitySet = DatabaseContext.Set<TEntity>();
+            var entityEntry = await entitySet.AddAsync(entity, cancellationToken);
 
-            return await result.ToListAsync(cancellationToken);
+            await UnitOfWork.SaveChangesAsync();
+
+            return entityEntry.Entity;
         }
 
-        public async Task InsertOneAsync(TDocument document, CancellationToken cancellationToken)
-            => await Collection.InsertOneAsync(document, cancellationToken: cancellationToken);
+        public async Task UpdateOneAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            var entitySet = DatabaseContext.Set<TEntity>();
 
-        public async Task UpdateOneAsync(Expression<Func<TDocument, bool>> expression, UpdateDefinition<TDocument> document, UpdateOptions options, CancellationToken cancellationToken = default)
-            => await Collection.UpdateOneAsync(expression, document, options, cancellationToken: cancellationToken);
+            DatabaseContext.Entry(entity).State = EntityState.Modified;
+
+            await UnitOfWork.SaveChangesAsync();
+        }
     }
 }

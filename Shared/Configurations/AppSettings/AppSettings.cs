@@ -6,6 +6,7 @@ namespace Rental.WebApi.Shared.Configurations.AppSettings
     public class AppSettings : IAppSettings
     {
         public RabbitMQMessageBus RabbitMqMessageBus { get; set; }
+        public MongoDatabase MongoDatabase { get; set; }
 
         public AppSettings()
         {
@@ -13,6 +14,12 @@ namespace Rental.WebApi.Shared.Configurations.AppSettings
             {
                 ConnectionString = GetAndValidateEnvironment(""),
                 BrokerName = GetAndValidateEnvironment("")
+            };
+
+            MongoDatabase = new MongoDatabase
+            {
+                ConnectionString = GetAndValidateEnvironment(""),
+                DatabaseName = GetAndValidateEnvironment("")
             };
         }
 

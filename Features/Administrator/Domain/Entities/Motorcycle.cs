@@ -1,10 +1,8 @@
-﻿using Rental.WebApi.Shared.Data.Attributes;
-using Rental.WebApi.Shared.Domain;
+﻿using Rental.WebApi.Shared.Domain;
 
 namespace Rental.WebApi.Features.Administrator.Domain.Entities
 {
-    [BsonCollection("Motorcyles")]
-    public class Motorcycle : MongoDbDocument
+    public class Motorcycle : EntityModel
     {
         public Motorcycle(DateOnly year, string model, string licensePlate)
         {

@@ -83,8 +83,8 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             }
         }
 
-        [HttpGet("/motorcycle/{id:string}")]
-        public async Task<IActionResult> GetMotorcycleByIdAsync([FromQuery, Required] string id)
+        [HttpGet("/motorcycle/{id:guid}")]
+        public async Task<IActionResult> GetMotorcycleByIdAsync([FromQuery, Required] Guid id)
         {
             try
             {
@@ -105,8 +105,8 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             }
         }
 
-        [HttpGet("/delete-motorcycle/{id:string}")]
-        public async Task<IActionResult> DeleteMotorcycleAsync([FromQuery, Required] string id)
+        [HttpGet("/delete-motorcycle/{id:guid}")]
+        public async Task<IActionResult> DeleteMotorcycleAsync([FromQuery, Required] Guid id)
         {
             try
             {

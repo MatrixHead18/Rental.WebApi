@@ -1,4 +1,7 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
+using Rental.WebApi.Shared.Configurations.AppSettings.Interfaces;
+using Rental.WebApi.Shared.Data;
 
 namespace Rental.WebApi.Shared.DependencyInjection
 {
@@ -6,11 +9,13 @@ namespace Rental.WebApi.Shared.DependencyInjection
     {
         public static void Register(IServiceCollection services, IAppSettings appSettings)
         {
-            services.AddSingleton(serviceProvider =>
+            services.AddDbContext<DatabaseContext>((serviceProvider,options) => 
             {
-                var settings = MongoClientSettings.FromConnectionString(appSettings.Database.ConnectionString);
-
-                return new MongoClient(settings).GetDatabase(appSettings.Database.Name);
+                options
+                    .UseLoggerFactory(serviceProvider.GetService<ILoggerFactory>())
+                    .UseMongoDB(new MongoClient(appSettings.MongoDatabase.ConnectionString), appSettings.MongoDatabase.DatabaseName)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors();
             });
         }
     }

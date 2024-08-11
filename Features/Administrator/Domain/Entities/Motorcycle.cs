@@ -1,8 +1,8 @@
-﻿using Rental.WebApi.Shared.Domain;
+﻿using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Features.Administrator.Domain.Entities
 {
-    public class Motorcycle : EntityModel
+    public class Motorcycle : Entity
     {
         public Motorcycle(DateOnly year, string model, string licensePlate)
         {

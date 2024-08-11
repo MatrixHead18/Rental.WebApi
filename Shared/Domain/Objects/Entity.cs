@@ -1,13 +1,13 @@
 ﻿using Rental.WebApi.Shared.Domain.Interfaces;
 using Rental.WebApi.Shared.MessageBus.Message;
 
-namespace Rental.WebApi.Shared.Domain
+namespace Rental.WebApi.Shared.Domain.Objects
 {
-    public class EntityModel : IEntityModel
+    public class Entity : IEntityModel
     {
         public Guid Id { get; set; }
 
-        public EntityModel()
+        public Entity()
         {
             Id = Guid.NewGuid();
         }

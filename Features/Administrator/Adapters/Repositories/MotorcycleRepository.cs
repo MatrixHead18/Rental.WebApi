@@ -9,7 +9,7 @@ namespace Rental.WebApi.Features.Administrator.Adapters.Repositories
     {
         private readonly DatabaseContext _databaseContext;
 
-        public MotorcycleRepository(DatabaseContext databaseContext) : base(databaseContext)
+        public MotorcycleRepository(DatabaseContext databaseContext) : base(databaseContext) 
         {
             _databaseContext = databaseContext;
         }

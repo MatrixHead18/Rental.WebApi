@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NSE.Core.Mediator;
-using Rental.WebApi.Shared.Domain;
+using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Shared.Data
 {
@@ -9,7 +9,7 @@ namespace Rental.WebApi.Shared.Data
         public static async Task PublicarEventos<T>(this IMediatorHandler mediator, T ctx) where T : DbContext
         {
             var domainEntities = ctx.ChangeTracker
-                .Entries<EntityModel>()
+                .Entries<Entity>()
                 .Where(x => x.Entity.Notificacoes != null && x.Entity.Notificacoes.Any());
 
             var domainEvents = domainEntities

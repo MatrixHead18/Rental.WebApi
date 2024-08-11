@@ -1,21 +1,26 @@
-﻿using Rental.WebApi.Features.Deliveryman.Domain.Enums;
-using Rental.WebApi.Shared.Domain;
+﻿using Rental.WebApi.Features.Administrator.Domain.Entities;
+using Rental.WebApi.Features.Deliveryman.Domain.Enums;
+using Rental.WebApi.Shared.Domain.Exceptions;
+using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
 {
-    public class Lease : EntityModel
+    public class Lease : Entity, IAggregateRoot
     {
-        public Lease(DateTime endDate, DateTime expectedEndDate, DeliveryMan deliveryman)
+        public Lease(DeliveryMan deliveryMan, LeasePlan leasePlan)
         {
-            if (deliveryman.CNHType != (CNHType.A | CNHType.B | CNHType.AB) )
+            if (deliveryMan.CNHType != (CNHType.A | CNHType.B | CNHType.AB))
             {
-                throw new InvalidOperationException("Somente entregadores habilitados na categoria A podem efetuar uma locação.");
+                throw new DomainException("Only delivery drivers qualified in category A can make a rental.");
             }
 
+            Deliveryman = deliveryMan;
+            LeasePlan = leasePlan;
             CreationDate = DateTime.Today;
             InitialDate = CreationDate.AddDays(1);
-            EndDate = endDate;
-            ExpectedEndDate = expectedEndDate;
+            ExpectedEndDate = InitialDate.AddDays(LeasePlan.DurationDays - 1);
+            EndDate = ExpectedEndDate;
+            TotalCost = LeasePlan.CalculateTotalCost();
         }
         public DateTime CreationDate { get; private set; }
 
@@ -25,18 +30,50 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
 
         public DateTime ExpectedEndDate { get; private set; }
 
+        public decimal TotalCost { get; private set; }
 
-        public virtual Guid? DeliverymanId { get; set; }
-        public virtual DeliveryMan Deliveryman{ get; set; }
+        public Guid MotorCycleId { get; set; }
+        public virtual Motorcycle Motorcycle { get; set; }
 
-        public TimeSpan CalculateDuration()
+        public Guid LeasePlanId { get; set; }
+        public virtual LeasePlan LeasePlan { get; set; }
+
+        public Guid DeliverymanId { get; set; }
+        public virtual DeliveryMan Deliveryman { get; set; }
+
+        public decimal CalculateLeaseTotalValue(DateTime devolutionDate)
         {
-            return EndDate.Subtract(InitialDate);
+            if (devolutionDate < InitialDate)
+                throw new DomainException("A data de devolução não pode ser anterior à data de início da locação.");
+
+            if (devolutionDate <= ExpectedEndDate)
+                return CalculateValueFineBeetween7And15Days(devolutionDate);
+            else
+                return CalculateValueFineSuperiorExpectedDate(devolutionDate);
         }
 
-        public bool ThisWithinDeadline()
+        private decimal CalculateValueFineSuperiorExpectedDate(DateTime devolutionDate)
         {
-            return EndDate <= ExpectedEndDate;
+            int additionalDays = (devolutionDate - ExpectedEndDate).Days;
+            decimal additionalDaysCost = additionalDays * 50.00m;
+            return LeasePlan.CalculateTotalCost() + additionalDaysCost;
+        }
+
+        private decimal CalculateValueFineBeetween7And15Days(DateTime devolutionDate)
+        {
+            int daysNotEffective;
+            decimal valueFine;
+
+            daysNotEffective = (ExpectedEndDate - devolutionDate).Days;
+            valueFine = 0;
+
+            if (LeasePlan.DurationDays == 7)
+                valueFine = daysNotEffective * LeasePlan.CostPerDay * 0.20m;
+
+            else if (LeasePlan.DurationDays == 15)
+                valueFine = daysNotEffective * LeasePlan.CostPerDay * 0.40m;
+
+            return LeasePlan.CalculateTotalCost() - (daysNotEffective * LeasePlan.CostPerDay) + valueFine;
         }
     }
 }

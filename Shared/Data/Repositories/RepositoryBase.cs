@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rental.WebApi.Shared.Data.Interfaces;
-using Rental.WebApi.Shared.Domain;
+using Rental.WebApi.Shared.Domain.Objects;
 using System.Linq.Expressions;
 
 namespace Rental.WebApi.Shared.Data.Repositories
 {
-    public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : EntityModel
+    public class RepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : Entity
     {
         private DatabaseContext DatabaseContext;
 

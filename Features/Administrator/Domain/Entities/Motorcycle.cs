@@ -1,4 +1,5 @@
-﻿using Rental.WebApi.Shared.Domain.Objects;
+﻿using Rental.WebApi.Features.Deliveryman.Domain.Entities;
+using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Features.Administrator.Domain.Entities
 {
@@ -15,13 +16,15 @@ namespace Rental.WebApi.Features.Administrator.Domain.Entities
         public string Model { get; private set; } = string.Empty;
         public string LicensePlate { get; private set; } = string.Empty;
 
+        public Guid LeaseId { get; set; }
+        public virtual Lease Lease { get; set; }
+
         public override bool Equals(object? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return other is Motorcycle motorcycle &&
-                   LicensePlate == motorcycle.LicensePlate;
+            return other is Motorcycle motorcycle && LicensePlate == motorcycle.LicensePlate;
         }
 
         public override int GetHashCode()

@@ -14,6 +14,7 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
                 throw new DomainException("Only delivery drivers qualified in category A can make a rental.");
             }
 
+            IsActive = true;   
             Deliveryman = deliveryMan;
             LeasePlan = leasePlan;
             CreationDate = DateTime.Today;
@@ -22,6 +23,9 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
             EndDate = ExpectedEndDate;
             TotalCost = LeasePlan.CalculateTotalCost();
         }
+
+        public bool IsActive { get; private set; } = false;
+
         public DateTime CreationDate { get; private set; }
 
         public DateTime InitialDate { get; private set; }

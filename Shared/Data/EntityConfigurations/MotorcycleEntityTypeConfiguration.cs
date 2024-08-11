@@ -10,16 +10,19 @@ namespace Rental.WebApi.Shared.Data.EntityConfigurations
         public void Configure(EntityTypeBuilder<Motorcycle> builder)
         {
             builder.Property(p => p.Year)
-                .HasColumnName("")
+                .HasColumnName("Year")
                 .IsRequired();
 
             builder.Property(p => p.Model)
-                .HasColumnName("")
+                .HasColumnName("Model")
                 .IsRequired();
 
             builder.Property(p => p.LicensePlate)
-                .HasColumnName("")
+                .HasColumnName("LicensePlate")
                 .IsRequired();
+
+            builder
+                .HasKey(v => v.Id);
 
             builder.ToCollection("Motorcycles");
         }

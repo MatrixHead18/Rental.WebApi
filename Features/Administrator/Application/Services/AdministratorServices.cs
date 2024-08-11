@@ -1,9 +1,11 @@
 ﻿using EasyNetQ;
+using Microsoft.EntityFrameworkCore;
 using Rental.WebApi.Features.Administrator.Application.Interfaces;
 using Rental.WebApi.Features.Administrator.Application.Models.Requests;
 using Rental.WebApi.Features.Administrator.Application.Models.Responses;
 using Rental.WebApi.Features.Administrator.Domain.Events.ModelEvents;
 using Rental.WebApi.Features.Administrator.Domain.Interfaces;
+using Rental.WebApi.Shared.Domain.Exceptions;
 
 namespace Rental.WebApi.Features.Administrator.Application.Services
 {
@@ -39,13 +41,23 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
         {
             _logger.LogInformation("Deleting motorcycle from database...");
 
-            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == id, cancellationToken: cancellationToken);
+            var motorcycle = await _motorcycleRepository.FindByIdAsync(
+                filter: f=> f.Id == id, 
+                includes: (x) => x.Include(g=> g.Lease),
+                cancellationToken: cancellationToken);
 
             if (motorcycle is null)
             {
-                _logger.LogWarning("There's no motorcycle in database to delete.");
+                _logger.LogWarning("There's no motorcycle founded.");
 
                 throw new InvalidOperationException();
+            }
+
+            if (motorcycle.Lease is not null || motorcycle.Lease!.IsActive)
+            {
+                _logger.LogWarning("Motorcycle has a lease active, not possible delete de motorcycle.");
+
+                throw new DomainException($"Lease to the motorcycle with id: {motorcycle.Id}, has active");
             }
 
             await _motorcycleRepository.DeleteOneAsync(motorcycle);
@@ -53,7 +65,10 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
 
         public async Task<MotorcycleResponse> GetMotorcycleByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == id, cancellationToken: cancellationToken);
+            var motorcycle = await _motorcycleRepository.FindByIdAsync(
+                 filter: f => f.Id == id,
+                 includes: (x) => x.Include(g => g.Lease),
+                 cancellationToken: cancellationToken);
 
             if (motorcycle is null)
             {

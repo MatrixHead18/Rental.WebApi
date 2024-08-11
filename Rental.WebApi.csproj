@@ -22,4 +22,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Deliveryman\Application\Interfaces\" />
+    <Folder Include="Features\Deliveryman\Application\Models\Responses\" />
+    <Folder Include="Features\Deliveryman\Application\Models\Requests\" />
+    <Folder Include="Features\Deliveryman\Application\Services\" />
+    <Folder Include="Features\Deliveryman\Controllers\" />
+  </ItemGroup>
+
 </Project>

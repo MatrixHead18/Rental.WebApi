@@ -14,20 +14,25 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
         public CNHType CNHType { get; set; } 
         public byte[] CNHImage { get; set; }
 
-        public Guid LeaseId { get; set; }
-        public Lease Lease { get; set; }
+        public Guid? LeaseId { get; set; }
+        public virtual Lease Lease { get; set; }
 
-        public Guid MotorcycleId { get; set; }
+        public Guid? MotorcycleId { get; set; }
         public virtual Motorcycle Motorcycle { get; set; }
 
-        public DeliveryMan(string name, string cpf, DateTime birthDate, string cnhNumber, CNHType cnhType, byte[] cnhImage)
+        public DeliveryMan(string name, string cpf, DateTime birthDate, string cnhNumber, int cnhType, byte[] cnhImage)
         {
             Name = name;
             CPF = new Cpf(cpf);
             BirthDate = birthDate;
             CNHNumber = cnhNumber ?? throw new DomainException($"Invalid field: {cnhNumber}");
-            CNHType = cnhType;
+            CNHType = (CNHType)cnhType;
             CNHImage = cnhImage ?? throw new DomainException($"Invalid field: {cnhImage}");
+        }
+
+        public void UpdateCnhImage(byte [] cnhImage)
+        {
+            CNHImage = cnhImage;
         }
     }
 }

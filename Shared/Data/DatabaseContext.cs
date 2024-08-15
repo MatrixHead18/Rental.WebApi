@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NSE.Core.Mediator;
 using Rental.WebApi.Features.Administrator.Domain.Entities;
-using Rental.WebApi.Features.Deliveryman.Domain.Entities;
+using Rental.WebApi.Features.Lease.Domain.Entities;
 using Rental.WebApi.Shared.Data.EntityConfigurations;
 using Rental.WebApi.Shared.Data.Interfaces;
 

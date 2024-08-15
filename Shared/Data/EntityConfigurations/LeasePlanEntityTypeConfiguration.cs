@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MongoDB.EntityFrameworkCore.Extensions;
-using Rental.WebApi.Features.Deliveryman.Domain.Entities;
+using Rental.WebApi.Features.Lease.Domain.Entities;
 
 namespace Rental.WebApi.Shared.Data.EntityConfigurations
 {

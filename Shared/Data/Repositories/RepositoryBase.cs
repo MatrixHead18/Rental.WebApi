@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Rental.WebApi.Features.Deliveryman.Domain.Entities;
 using Rental.WebApi.Shared.Data.Interfaces;
 using Rental.WebApi.Shared.Domain.Objects;
 using System.Linq.Expressions;
@@ -16,6 +18,15 @@ namespace Rental.WebApi.Shared.Data.Repositories
 
         public IUnitOfWork UnitOfWork => DatabaseContext;
 
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>>? filter = default, CancellationToken cancellationToken = default)
+        {
+            IQueryable<TEntity> query = DatabaseContext.Set<TEntity>().AsQueryable();
+
+            query.Where(filter!);
+
+            return await query.AnyAsync(cancellationToken);
+        }
+
         public async Task DeleteOneAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             var entitySet = DatabaseContext.Set<TEntity>();
@@ -28,11 +39,14 @@ namespace Rental.WebApi.Shared.Data.Repositories
             await UnitOfWork.SaveChangesAsync();
         }
             
-        public async Task<TEntity?> FindByIdAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken =default)
+        public async Task<TEntity?> FindByIdAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = default, CancellationToken cancellationToken =default)
         {
             IQueryable<TEntity> query = DatabaseContext.Set<TEntity>().AsQueryable();
 
             query = query.Where(filter!);
+
+            if (includes != null)
+                query = includes(query);
 
             return await query.FirstOrDefaultAsync(cancellationToken);
         }

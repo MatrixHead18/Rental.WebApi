@@ -1,12 +1,9 @@
-﻿using Rental.WebApi.Features.Administrator.Application.Services;
-using Rental.WebApi.Features.Deliveryman.Adapters.Repositories;
-using Rental.WebApi.Features.Deliveryman.Application.Interfaces;
+﻿using Rental.WebApi.Features.Deliveryman.Application.Interfaces;
 using Rental.WebApi.Features.Deliveryman.Application.Models.Requests;
 using Rental.WebApi.Features.Deliveryman.Domain.Entities;
-using Rental.WebApi.Features.Deliveryman.Domain.Enums;
 using Rental.WebApi.Features.Deliveryman.Domain.Interfaces;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 
 namespace Rental.WebApi.Features.Deliveryman.Application.Services
 {
@@ -33,9 +30,7 @@ namespace Rental.WebApi.Features.Deliveryman.Application.Services
             if (await _deliveryManRepository.ExistsByCNHNumberAsync(request.CNHNumber))
                 throw new Exception("CNH number already registered.");
 
-            string fileExtension = ValidateImageFormat(request.CNHImage);
-
-            string filePath = SaveCNHImageLocally(request.CNHImage, request.CNHNumber, fileExtension);
+            SaveCNHImageLocally(request.CNHImage, request.CNHNumber);
 
             var deliveryMan = new DeliveryMan(request.Name, request.CPF, request.BirthDate, request.CNHNumber, request.CNHType, request.CNHImage);
 
@@ -55,7 +50,7 @@ namespace Rental.WebApi.Features.Deliveryman.Application.Services
                 throw new InvalidOperationException();
             }
 
-            string fileExtension = ValidateImageFormat(request.CNHImage);
+            _ = ValidateImageFormat(request.CNHImage);
 
             deliveryMan.UpdateCnhImage(request.CNHImage);
 
@@ -64,25 +59,27 @@ namespace Rental.WebApi.Features.Deliveryman.Application.Services
 
         private string ValidateImageFormat(byte[] imageBytes)
         {
-            using var memoryStream = new MemoryStream(imageBytes);
-            using var image = Image.FromStream(memoryStream);
+            using var image = Image.Load(imageBytes);
 
-            return image.RawFormat switch
+            IImageFormat format = image.Metadata.DecodedImageFormat;
+
+            return format.Name switch
             {
-                var format when format.Equals(ImageFormat.Png) => ".png",
-                var format when format.Equals(ImageFormat.Bmp) => ".bmp",
-                _ => throw new Exception("Invalid image format. Only PNG and BMP are supported.")
+                "PNG" => ".png",
+                "BMP" => ".bmp",
+                _ => throw new NotSupportedException("Invalid image format. Only PNG and BMP are supported.")
             };
+
         }
 
-        private string SaveCNHImageLocally(byte[] imageBytes, string cnhNumber, string fileExtension)
+        private void SaveCNHImageLocally(byte[] imageBytes, string cnhNumber)
         {
+            var fileExtension = ValidateImageFormat(imageBytes);
+
             var fileName = $"{cnhNumber}_CNH{fileExtension}";
             var fullPath = Path.Combine(_storagePath, fileName);
 
             File.WriteAllBytes(fullPath, imageBytes);
-
-            return fullPath;
         }
     }
 }

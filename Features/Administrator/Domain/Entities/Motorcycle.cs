@@ -1,5 +1,4 @@
-﻿using Rental.WebApi.Features.Deliveryman.Domain.Entities;
-using Rental.WebApi.Shared.Domain.Objects;
+﻿using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Features.Administrator.Domain.Entities
 {

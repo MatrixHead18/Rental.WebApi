@@ -12,5 +12,6 @@ namespace Rental.WebApi.Shared.Data.Interfaces
         Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
         Task UpdateOneAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task DeleteOneAsync(TEntity entity, CancellationToken cancellationToken = default);
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>>? filter = null, CancellationToken cancellationToken = default);
     }
 }

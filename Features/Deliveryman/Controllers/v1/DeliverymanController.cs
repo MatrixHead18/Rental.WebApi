@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Rental.WebApi.Features.Administrator.Application.Models.Requests;
 using Rental.WebApi.Features.Deliveryman.Application.Interfaces;
 using Rental.WebApi.Features.Deliveryman.Application.Models.Requests;
 using System.ComponentModel.DataAnnotations;
@@ -34,6 +33,28 @@ namespace Rental.WebApi.Features.Deliveryman.Controllers.v1
                     {
                         StatusCode = HttpStatusCode.BadRequest,
                         Message = $"Error while creating a new delivery man",
+                        Details = ex.Message
+                    }
+                );
+            }
+        }
+
+        [HttpPut("/update-deliveryman")]
+        public async Task<IActionResult> UpdateDeliveryMan([FromBody, Required] UpdateDeliveryManRequest request)
+        {
+            try
+            {
+                await _deliveryManService.UpdateDeliveryManAsync(request);
+
+                return new OkResult();
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        StatusCode = 400,
+                        Message = $"Error while updating deliveryman from request: {request}",
                         Details = ex.Message
                     }
                 );

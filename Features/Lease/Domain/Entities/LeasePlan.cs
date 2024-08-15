@@ -1,7 +1,7 @@
 ﻿using Rental.WebApi.Shared.Domain.Exceptions;
 using Rental.WebApi.Shared.Domain.Objects;
 
-namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
+namespace Rental.WebApi.Features.Lease.Domain.Entities
 {
     public class LeasePlan : Entity
     {

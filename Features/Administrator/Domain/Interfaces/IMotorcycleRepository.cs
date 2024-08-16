@@ -5,5 +5,6 @@ namespace Rental.WebApi.Features.Administrator.Domain.Interfaces
 {
     public interface IMotorcycleRepository : IRepositoryBase<Motorcycle>
     {
+        Task<Motorcycle?> FindByLicensePlateAsync(string licensePlate);
     }
 }

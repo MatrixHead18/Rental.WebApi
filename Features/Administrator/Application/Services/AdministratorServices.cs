@@ -114,7 +114,7 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
                 throw new InvalidOperationException();
             }
 
-            motorcycle.UpdateMotorcycle(request.LicensaPlate);
+            motorcycle.UpdateMotorcycle(request.LicensePlate);
 
             await _motorcycleRepository.UpdateOneAsync(motorcycle);
         }

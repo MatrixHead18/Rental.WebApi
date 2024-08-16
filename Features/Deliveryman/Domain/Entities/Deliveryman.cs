@@ -14,9 +14,6 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
         public CNHType CNHType { get; set; } 
         public byte[] CNHImage { get; set; }
 
-        public Guid? LeaseId { get; set; }
-        public virtual Lease Lease { get; set; }
-
         public Guid? MotorcycleId { get; set; }
         public virtual Motorcycle Motorcycle { get; set; }
 

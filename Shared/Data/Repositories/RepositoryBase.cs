@@ -35,8 +35,6 @@ namespace Rental.WebApi.Shared.Data.Repositories
                 DatabaseContext.Entry(trackedEntity.Entity).State = EntityState.Detached;
 
             entitySet.Attach(entity);
-
-            await UnitOfWork.SaveChangesAsync();
         }
             
         public async Task<TEntity?> FindByIdAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? includes = default, CancellationToken cancellationToken =default)
@@ -66,8 +64,6 @@ namespace Rental.WebApi.Shared.Data.Repositories
             var entitySet = DatabaseContext.Set<TEntity>();
             var entityEntry = await entitySet.AddAsync(entity, cancellationToken);
 
-            await UnitOfWork.SaveChangesAsync();
-
             return entityEntry.Entity;
         }
 
@@ -76,8 +72,6 @@ namespace Rental.WebApi.Shared.Data.Repositories
             var entitySet = DatabaseContext.Set<TEntity>();
 
             DatabaseContext.Entry(entity).State = EntityState.Modified;
-
-            await UnitOfWork.SaveChangesAsync();
         }
     }
 }

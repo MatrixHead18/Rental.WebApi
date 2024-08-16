@@ -8,21 +8,19 @@ namespace Rental.WebApi.Features.Lease.Domain.Entities
 {
     public class Lease : Entity, IAggregateRoot
     {
-        public Lease(DeliveryMan deliveryMan, LeasePlan leasePlan)
+        public Lease(DeliveryMan deliveryMan, int expectedDays)
         {
-            if (deliveryMan.CNHType != (CNHType.A | CNHType.B | CNHType.AB))
-            {
-                throw new DomainException("Only delivery drivers qualified in category A can make a rental.");
-            }
+            if (deliveryMan.CNHType != (CNHType.A | CNHType.AB))
+                throw new DomainException("Only delivery drivers qualified in category A or AB can make a rental.");
 
             IsActive = true;
             Deliveryman = deliveryMan;
-            LeasePlan = leasePlan;
+            LeasePlan = new LeasePlan(expectedDays); //TODO: Melhorar LeasePlan no domínio
             CreationDate = DateTime.Today;
             InitialDate = CreationDate.AddDays(1);
             ExpectedEndDate = InitialDate.AddDays(LeasePlan.DurationDays - 1);
             EndDate = ExpectedEndDate;
-            TotalCost = LeasePlan.CalculateTotalCost();
+            TotalCost = LeasePlan.CalculateTotalCost(); //TODO: Melhorar lógica de custo total do aluguel
         }
 
         public bool IsActive { get; private set; } = false;
@@ -60,7 +58,9 @@ namespace Rental.WebApi.Features.Lease.Domain.Entities
         private decimal CalculateValueFineSuperiorExpectedDate(DateTime devolutionDate)
         {
             int additionalDays = (devolutionDate - ExpectedEndDate).Days;
+
             decimal additionalDaysCost = additionalDays * 50.00m;
+
             return LeasePlan.CalculateTotalCost() + additionalDaysCost;
         }
 

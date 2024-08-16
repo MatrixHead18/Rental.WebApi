@@ -36,11 +36,14 @@ namespace Rental.WebApi.Shared.Data
             var rowsAffected = await base.SaveChangesAsync(cancellationToken);
             
             if (rowsAffected > 0)
-            {
                 await _mediatorHandler.PublicarEventos(this);
-            }
 
             return rowsAffected;
+        }
+
+        public async Task<int> PersistChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public interface IUnitOfWork
     {
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<int> PersistChangesAsync(CancellationToken cancellationToken = default);
         Task<int> CommitAsync(CancellationToken cancellationToken = default);
     }
 }

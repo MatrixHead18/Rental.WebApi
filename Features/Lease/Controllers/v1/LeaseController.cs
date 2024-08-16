@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rental.WebApi.Features.Administrator.Application.Models.Requests;
 using Rental.WebApi.Features.Lease.Application.Interfaces;
+using Rental.WebApi.Features.Lease.Application.Models.Requests;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
@@ -18,14 +19,14 @@ namespace Rental.WebApi.Features.Lease.Controllers.v1
             _leaseServices = leaseServices;
         }
 
-        [HttpPost("/create-lease")]
-        public async Task<IActionResult> CreateLease([FromBody, Required] CreateNewMotorcycleRequest request)
+        [HttpPost("/lease-motorcycle")]
+        public async Task<IActionResult> CreateLease([FromBody, Required] RentMotorcycleRequest request)
         {
             try
             {
-                await _leaseServices.CreateMotorcycleAsync(request);
+                var result = await _leaseServices.RentAMotorcycleAsync(request);
 
-                return new CreatedResult();
+                return new OkObjectResult(result);
             }
             catch (Exception ex)
             {

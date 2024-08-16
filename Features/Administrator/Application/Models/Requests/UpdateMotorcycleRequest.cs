@@ -8,6 +8,6 @@ namespace Rental.WebApi.Features.Administrator.Application.Models.Requests
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "The LicencePlate has incorrect value")]
-        public string LicensaPlate { get; set; }
+        public string LicensePlate { get; set; }
     }
 }

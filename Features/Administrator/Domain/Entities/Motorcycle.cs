@@ -35,10 +35,5 @@ namespace Rental.WebApi.Features.Administrator.Domain.Entities
             LicensePlate = licensePlate;
             return this;
         }
-
-        public void SetDeliverymanOwner(Guid idDeliveryMan)
-        {
-            DeliveryManId = idDeliveryMan; 
-        }
     }
 }

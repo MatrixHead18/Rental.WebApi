@@ -15,10 +15,10 @@ namespace Rental.WebApi.Shared.Domain.Objects
         private List<Event> _notifications;
         public IReadOnlyCollection<Event> Notificacoes => _notifications.AsReadOnly();
 
-        public void AddEvent(Event evento)
+        public void AddEvent(Event @event)
         {
             _notifications = _notifications ?? new List<Event>();
-            _notifications.Add(evento);
+            _notifications.Add(@event);
         }
 
         public void RemoveEvent(Event eventItem)

@@ -19,8 +19,8 @@ namespace Rental.WebApi.Shared.Data
         }
 
         public DbSet<Motorcycle> Motorcycles { get; init; }
-        public DbSet<LeasePlan> LeasePlans { get; init; }
-        public DbSet<Lease> Leases { get; init; }
+        public DbSet<RentPlan> RentalPlans { get; init; }
+        public DbSet<Rent> Rentals { get; init; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,7 +33,7 @@ namespace Rental.WebApi.Shared.Data
 
         public async Task<int> CommitAsync(CancellationToken cancellationToken = default)
         {
-            var rowsAffected = await base.SaveChangesAsync(cancellationToken);
+            var rowsAffected = await SaveChangesAsync(cancellationToken);
             
             if (rowsAffected > 0)
                 await _mediatorHandler.PublicarEventos(this);
@@ -43,7 +43,7 @@ namespace Rental.WebApi.Shared.Data
 
         public async Task<int> PersistChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await base.SaveChangesAsync(cancellationToken);
+            return await SaveChangesAsync(cancellationToken);
         }
     }
 }

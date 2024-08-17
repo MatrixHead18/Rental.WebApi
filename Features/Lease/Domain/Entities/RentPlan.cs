@@ -3,19 +3,19 @@ using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Features.Lease.Domain.Entities
 {
-    public class LeasePlan : Entity
+    public class RentPlan : Entity
     {
         public int DurationDays { get; private set; }
         public decimal CostPerDay { get; private set; }
 
-        public LeasePlan(int durationDays)
+        public RentPlan(int durationDays)
         {
             DurationDays = durationDays;
             CostPerDay = DefineCostPerDay(durationDays);
         }
 
-        public Guid? LeaseId { get; set; }
-        public virtual Lease Lease { get; set; }
+        public Guid? RentId { get; set; }
+        public virtual Rent Rent { get; set; }
 
         private decimal DefineCostPerDay(int durationDays)
         {

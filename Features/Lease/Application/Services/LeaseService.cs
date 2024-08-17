@@ -5,6 +5,8 @@ using Rental.WebApi.Features.Deliveryman.Domain.Interfaces;
 using Rental.WebApi.Features.Lease.Application.Interfaces;
 using Rental.WebApi.Features.Lease.Application.Models.Requests;
 using Rental.WebApi.Features.Lease.Application.Models.Responses;
+using Rental.WebApi.Features.Lease.Domain.Entities;
+using Rental.WebApi.Features.Lease.Domain.Interfaces;
 
 namespace Rental.WebApi.Features.Lease.Application.Services
 {
@@ -13,14 +15,28 @@ namespace Rental.WebApi.Features.Lease.Application.Services
         private readonly ILogger<LeaseService> _logger;
         private readonly IDeliverymanRepository _deliverymanRepository;
         private readonly IMotorcycleRepository _motorcycleRepository;
+        private readonly IRentalRepository _rentalRepository;
 
         public LeaseService(IDeliverymanRepository deliverymanRepository,
                             IMotorcycleRepository motorcycleRepository,
+                            IRentalRepository rentalRepository,
                             ILogger<LeaseService> logger)
         {
             _deliverymanRepository = deliverymanRepository;
             _motorcycleRepository = motorcycleRepository;
+            _rentalRepository = rentalRepository;
             _logger = logger;
+        }
+
+        public async Task<LeaseResponse> CalculateTotalRent(Guid idRental, DateTime devolutionDate, CancellationToken cancellationToken = default)
+        {
+            var rental = await _rentalRepository.FindByIdAsync(f => f.Id == idRental, cancellationToken: cancellationToken);
+
+            rental!.CalculateRentWithValueFineTotalValue(devolutionDate);
+
+            await _rentalRepository.UnitOfWork.PersistChangesAsync();
+
+            return new LeaseResponse { };
         }
 
         public async Task<LeaseResponse> RentAMotorcycleAsync(RentMotorcycleRequest request, CancellationToken cancellationToken = default)
@@ -41,25 +57,29 @@ namespace Rental.WebApi.Features.Lease.Application.Services
                 return;
             }
 
-            SetMotorcycleOwner(deliveryMan!, motorcycle);
+            SetMotorcycleOwner(motorcycle!, deliveryMan);
 
-            return await ExecuteCreationLease(deliveryMan, motorcycle);
+            return await ExecuteCreationRent(deliveryMan);
         }
 
-        private async Task<LeaseResponse> ExecuteCreationLease(DeliveryMan deliveryMan, Motorcycle motorcycle)
+        private async Task<LeaseResponse> ExecuteCreationRent(DeliveryMan deliveryMan, DateTime expectedEndDate)
         {
             //todo: fazer transaction para criação da locação
 
-            var lease = new Lease(deliveryMan, motorcycle);
+            var rent = new Rent(deliveryMan, expectedEndDate);
+
+            rent.CalculateRentalTotalCost();
+
+
         }
 
-        private async void SetMotorcycleOwner(DeliveryMan deliveryMan, Motorcycle motorcycle)
+        private async void SetMotorcycleOwner(Motorcycle motorcycle, DeliveryMan deliveryMan)
         {
-            _logger.LogInformation("Relationship motorcycle and his owner flow starting...");
+            _logger.LogInformation("Relationship deliveryman and his motorcycle flow starting...");
 
-            motorcycle.SetDeliverymanOwner(deliveryMan!.Id);
+            deliveryMan.SetMotorcycle(motorcycle);
 
-            await _motorcycleRepository.UnitOfWork.PersistChangesAsync();
+            await _deliverymanRepository.UnitOfWork.PersistChangesAsync();
         }
     }
 }

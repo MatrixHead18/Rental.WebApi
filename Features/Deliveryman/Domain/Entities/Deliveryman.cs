@@ -31,5 +31,11 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
         {
             CNHImage = cnhImage;
         }
+
+        public void SetMotorcycle(Motorcycle motorcycle)
+        {
+            MotorcycleId = motorcycle.Id;
+            Motorcycle = motorcycle;
+        }
     }
 }

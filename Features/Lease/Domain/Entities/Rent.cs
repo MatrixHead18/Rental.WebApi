@@ -6,24 +6,28 @@ using Rental.WebApi.Shared.Domain.Objects;
 
 namespace Rental.WebApi.Features.Lease.Domain.Entities
 {
-    public class Lease : Entity, IAggregateRoot
+    public class Rent : Entity, IAggregateRoot
     {
-        public Lease(DeliveryMan deliveryMan, int expectedDays)
+        public Rent(DeliveryMan deliveryMan, DateTime devolutionDate)
         {
             if (deliveryMan.CNHType != (CNHType.A | CNHType.AB))
                 throw new DomainException("Only delivery drivers qualified in category A or AB can make a rental.");
 
             IsActive = true;
+
             Deliveryman = deliveryMan;
-            LeasePlan = new LeasePlan(expectedDays); //TODO: Melhorar LeasePlan no domínio
+            DeliverymanId = deliveryMan.Id;
+            MotorcycleId = Deliveryman.MotorcycleId;
+            Motorcycle = Deliveryman.Motorcycle;
+
             CreationDate = DateTime.Today;
             InitialDate = CreationDate.AddDays(1);
-            ExpectedEndDate = InitialDate.AddDays(LeasePlan.DurationDays - 1);
+            RentPlan = new RentPlan(CalculateDurationDays(devolutionDate));
+            ExpectedEndDate = InitialDate.AddDays(RentPlan.DurationDays - 1);
             EndDate = ExpectedEndDate;
-            TotalCost = LeasePlan.CalculateTotalCost(); //TODO: Melhorar lógica de custo total do aluguel
         }
 
-        public bool IsActive { get; private set; } = false;
+        public bool IsActive { get; private set; }
 
         public DateTime CreationDate { get; private set; }
 
@@ -35,25 +39,31 @@ namespace Rental.WebApi.Features.Lease.Domain.Entities
 
         public decimal TotalCost { get; private set; }
 
-        public Guid MotorCycleId { get; set; }
+        public Guid? MotorcycleId { get; set; }
         public virtual Motorcycle Motorcycle { get; set; }
 
-        public Guid LeasePlanId { get; set; }
-        public virtual LeasePlan LeasePlan { get; set; }
+        public Guid RentPlanId { get; set; }
+        public virtual RentPlan RentPlan { get; set; }
 
         public Guid DeliverymanId { get; set; }
         public virtual DeliveryMan Deliveryman { get; set; }
 
-        public decimal CalculateLeaseTotalValue(DateTime devolutionDate)
+        public Rent CalculateRentalTotalCost()
         {
-            if (devolutionDate < InitialDate)
-                throw new DomainException("The return date cannot be earlier than the rental start date.");
+            TotalCost = RentPlan.CalculateTotalCost();
 
+            return this;
+        }
+
+        public decimal CalculateRentWithValueFineTotalValue(DateTime devolutionDate)
+        {
             if (devolutionDate <= ExpectedEndDate)
                 return CalculateValueFineBeetween7And15Days(devolutionDate);
             
             return CalculateValueFineSuperiorExpectedDate(devolutionDate);
         }
+
+        private int CalculateDurationDays(DateTime devolutionDate) => devolutionDate.Subtract(InitialDate).Days;
 
         private decimal CalculateValueFineSuperiorExpectedDate(DateTime devolutionDate)
         {
@@ -61,7 +71,9 @@ namespace Rental.WebApi.Features.Lease.Domain.Entities
 
             decimal additionalDaysCost = additionalDays * 50.00m;
 
-            return LeasePlan.CalculateTotalCost() + additionalDaysCost;
+            TotalCost = RentPlan.CalculateTotalCost() + additionalDaysCost;
+
+            return TotalCost;
         }
 
         private decimal CalculateValueFineBeetween7And15Days(DateTime devolutionDate)
@@ -72,13 +84,15 @@ namespace Rental.WebApi.Features.Lease.Domain.Entities
             daysNotEffective = (ExpectedEndDate - devolutionDate).Days;
             valueFine = 0;
 
-            if (LeasePlan.DurationDays == 7)
-                valueFine = daysNotEffective * LeasePlan.CostPerDay * 0.20m;
+            if (RentPlan.DurationDays == 7)
+                valueFine = (daysNotEffective * RentPlan.CostPerDay) * 0.20m;
 
-            else if (LeasePlan.DurationDays == 15)
-                valueFine = daysNotEffective * LeasePlan.CostPerDay * 0.40m;
+            else if (RentPlan.DurationDays == 15)
+                valueFine = (daysNotEffective * RentPlan.CostPerDay) * 0.40m;
 
-            return LeasePlan.CalculateTotalCost() - daysNotEffective * LeasePlan.CostPerDay + valueFine;
+            TotalCost = RentPlan.CalculateTotalCost() - (daysNotEffective * RentPlan.CostPerDay) + valueFine;
+
+            return TotalCost;
         }
     }
 }

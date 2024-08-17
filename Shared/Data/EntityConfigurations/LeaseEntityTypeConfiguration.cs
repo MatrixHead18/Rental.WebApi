@@ -5,9 +5,9 @@ using Rental.WebApi.Features.Lease.Domain.Entities;
 
 namespace Rental.WebApi.Shared.Data.EntityConfigurations
 {
-    public class LeaseEntityTypeConfiguration : IEntityTypeConfiguration<Lease>
+    public class LeaseEntityTypeConfiguration : IEntityTypeConfiguration<Rent>
     {
-        public void Configure(EntityTypeBuilder<Lease> builder)
+        public void Configure(EntityTypeBuilder<Rent> builder)
         {
             builder.Property(p => p.InitialDate)
                 .HasColumnName("InitialDate")
@@ -33,8 +33,8 @@ namespace Rental.WebApi.Shared.Data.EntityConfigurations
                 .HasColumnName("TotalCost")
                 .IsRequired();
 
-            builder.HasOne(c => c.LeasePlan)
-               .WithOne(c => c.Lease)
+            builder.HasOne(c => c.RentPlan)
+               .WithOne(c => c.Rent)
                .HasForeignKey("LeasePlanId");
 
             builder.HasOne(c => c.Motorcycle)

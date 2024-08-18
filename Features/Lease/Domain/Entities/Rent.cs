@@ -48,11 +48,9 @@ namespace Rental.WebApi.Features.Lease.Domain.Entities
         public Guid DeliverymanId { get; set; }
         public virtual DeliveryMan Deliveryman { get; set; }
 
-        public Rent CalculateRentalTotalCost()
+        public void CalculateRentalTotalCost()
         {
             TotalCost = RentPlan.CalculateTotalCost();
-
-            return this;
         }
 
         public decimal CalculateRentWithValueFineTotalValue(DateTime devolutionDate)

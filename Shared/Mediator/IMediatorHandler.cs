@@ -1,6 +1,6 @@
 ﻿using Rental.WebApi.Shared.MessageBus.Message;
 
-namespace NSE.Core.Mediator
+namespace Rental.WebApi.Shared.Mediator
 {
     public interface IMediatorHandler
     {

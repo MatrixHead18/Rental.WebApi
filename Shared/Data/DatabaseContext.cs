@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NSE.Core.Mediator;
+using Microsoft.EntityFrameworkCore.Storage;
 using Rental.WebApi.Features.Administrator.Domain.Entities;
 using Rental.WebApi.Features.Lease.Domain.Entities;
 using Rental.WebApi.Shared.Data.EntityConfigurations;
 using Rental.WebApi.Shared.Data.Interfaces;
+using Rental.WebApi.Shared.Mediator;
+using System.Data;
 
 namespace Rental.WebApi.Shared.Data
 {
-    public sealed class DatabaseContext : DbContext, IUnitOfWork
+    public class DatabaseContext : DbContext, IUnitOfWork
     {
         private readonly IMediatorHandler _mediatorHandler;
 
@@ -31,19 +33,34 @@ namespace Rental.WebApi.Shared.Data
             modelBuilder.ApplyConfiguration(new LeaseEntityTypeConfiguration());
         }
 
-        public async Task<int> CommitAsync(CancellationToken cancellationToken = default)
-        {
-            var rowsAffected = await SaveChangesAsync(cancellationToken);
-            
-            if (rowsAffected > 0)
-                await _mediatorHandler.PublicarEventos(this);
-
-            return rowsAffected;
-        }
-
         public async Task<int> PersistChangesAsync(CancellationToken cancellationToken = default)
         {
             return await SaveChangesAsync(cancellationToken);
+        }
+
+        public IExecutionStrategy CreateExecutionStrategy()
+        {
+            return Database.CreateExecutionStrategy();
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
+        {
+           return await Database.BeginTransactionAsync(isolationLevel, cancellationToken);
+        }
+
+        public async Task CommitTransactionAsync(IDbContextTransaction transaction, CancellationToken cancellationToken = default)
+        {
+            var rowsAffected = await PersistChangesAsync(cancellationToken);
+
+            if (rowsAffected > 0)
+                await _mediatorHandler.PublicarEvento(this);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+
+        public async Task RollbackTransactionAsync(IDbContextTransaction transaction, CancellationToken cancellationToken = default)
+        {
+            await transaction.RollbackAsync(cancellationToken);
         }
     }
 }

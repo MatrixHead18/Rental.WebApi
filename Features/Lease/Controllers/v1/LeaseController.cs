@@ -19,12 +19,34 @@ namespace Rental.WebApi.Features.Lease.Controllers.v1
             _leaseServices = leaseServices;
         }
 
-        [HttpPost("/lease-motorcycle")]
+        [HttpPost("/rent-motorcycle")]
         public async Task<IActionResult> CreateLease([FromBody, Required] RentMotorcycleRequest request)
         {
             try
             {
                 var result = await _leaseServices.RentAMotorcycleAsync(request);
+
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Message = $"Error while creating a new lease.",
+                        Details = ex.Message
+                    }
+                );
+            }
+        }
+
+        [HttpPost("/calculate-rent")]
+        public async Task<IActionResult> CalculateLeaseFromExpectedDate([FromBody, Required] UpdateLeaseCostRequest request)
+        {
+            try
+            {
+                var result = await _leaseServices.CalculateTotalRent(request.RentalId, request.ExpectedEndDate);
 
                 return new OkObjectResult(result);
             }

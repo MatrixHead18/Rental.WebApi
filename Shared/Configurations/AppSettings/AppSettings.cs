@@ -12,14 +12,13 @@ namespace Rental.WebApi.Shared.Configurations.AppSettings
         {
             RabbitMqMessageBus = new RabbitMQMessageBus
             {
-                ConnectionString = GetAndValidateEnvironment(""),
-                BrokerName = GetAndValidateEnvironment("")
+                ConnectionString = GetAndValidateEnvironment("RabbitMQ_ConnectionString")
             };
 
             MongoDatabase = new MongoDatabase
             {
-                ConnectionString = GetAndValidateEnvironment(""),
-                DatabaseName = GetAndValidateEnvironment("")
+                ConnectionString = GetAndValidateEnvironment("MongoDB_ConnectionString"),
+                DatabaseName = GetAndValidateEnvironment("MongoDB_DatabaseName")
             };
         }
 

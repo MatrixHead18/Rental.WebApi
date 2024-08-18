@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NSE.Core.Mediator;
 using Rental.WebApi.Shared.Domain.Objects;
+using Rental.WebApi.Shared.Mediator;
 
 namespace Rental.WebApi.Shared.Data
 {

@@ -18,7 +18,16 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             _administratorServices = administratorServices;
         }
 
+        /// <summary>
+        /// Insert a new motorcycle
+        /// </summary>
+        /// <param name="request.Year">Motorcycle year</param>
+        /// <param name="request.Model">Motorcycle model</param>
+        /// <param name="request.LicensePlate">Motorcycle license plate</param>
         [HttpPost("/create-motorcycle")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> InsertNewMotorcycleAsync([FromBody, Required]CreateNewMotorcycleRequest request)
         {
             try
@@ -39,7 +48,14 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             }
         }
 
+        /// <summary>
+        /// Get all motorcycles
+        /// </summary>
+        /// <returns>List of all motorcycles registered in database</returns>
         [HttpGet("/motorcycles")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> GetMotorcyclesAsync()
         {
             try
@@ -61,7 +77,15 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             }
         }
 
-        [HttpPut("/update-motorcycle")]
+        /// <summary>
+        /// Update license plate from motorcycle
+        /// </summary>
+        /// <param name="request.IdMotorcycle">Motorcycle identification</param>
+        /// <param name="request.LicensePlate">Motorcycle license plate</param>
+        [HttpPatch("/update-motorcycle")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> UpdateMotorcycleAsync([FromBody, Required] UpdateMotorcycleRequest request)
         {
             try
@@ -83,7 +107,15 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             }
         }
 
+        /// <summary>
+        /// Get motorcycle by id
+        /// </summary>
+        /// <param name="id">Motorcycle identification</param>
+        /// <returns>Motorcycle founded in database</returns>
         [HttpGet("/motorcycle/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> GetMotorcycleByIdAsync([FromQuery, Required] Guid id)
         {
             try
@@ -105,7 +137,14 @@ namespace Rental.WebApi.Features.Administrator.Controllers.v1
             }
         }
 
+        /// <summary>
+        /// Delete motorcycle from database
+        /// </summary>
+        /// <param name="id">Motorcycle identification</param>
         [HttpGet("/delete-motorcycle/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> DeleteMotorcycleAsync([FromQuery, Required] Guid id)
         {
             try

@@ -43,7 +43,7 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
 
             var motorcycle = await _motorcycleRepository.FindByIdAsync(
                 filter: f=> f.Id == id, 
-                includes: (x) => x.Include(g=> g.Lease),
+                includes: (x) => x.Include(g=> g.DeliveryMan).ThenInclude(v=> v.Rental),
                 cancellationToken: cancellationToken);
 
             if (motorcycle is null)
@@ -53,7 +53,7 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
                 throw new InvalidOperationException();
             }
 
-            if (motorcycle.Lease is not null || motorcycle.Lease!.IsActive)
+            if (motorcycle.DeliveryMan.Rental is not null || motorcycle.DeliveryMan.Rental!.IsActive)
             {
                 _logger.LogWarning("Motorcycle has a lease active, not possible delete de motorcycle.");
 
@@ -67,7 +67,6 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
         {
             var motorcycle = await _motorcycleRepository.FindByIdAsync(
                  filter: f => f.Id == id,
-                 includes: (x) => x.Include(g => g.Lease),
                  cancellationToken: cancellationToken);
 
             if (motorcycle is null)
@@ -103,9 +102,9 @@ namespace Rental.WebApi.Features.Administrator.Application.Services
 
         public async Task UpdateMotorcycleAsync(UpdateMotorcycleRequest request, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Updating motorcycle with id: {id}...", request.Id);
+            _logger.LogInformation("Updating motorcycle with id: {id}...", request.IdMotorcycle);
 
-            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == request.Id, cancellationToken: cancellationToken);
+            var motorcycle = await _motorcycleRepository.FindByIdAsync(f=> f.Id == request.IdMotorcycle, cancellationToken: cancellationToken);
 
             if (motorcycle is null) 
             {

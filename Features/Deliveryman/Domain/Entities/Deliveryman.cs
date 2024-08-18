@@ -1,5 +1,6 @@
 ﻿using Rental.WebApi.Features.Administrator.Domain.Entities;
 using Rental.WebApi.Features.Deliveryman.Domain.Enums;
+using Rental.WebApi.Features.Lease.Domain.Entities;
 using Rental.WebApi.Shared.Domain.Exceptions;
 using Rental.WebApi.Shared.Domain.Objects;
 
@@ -16,6 +17,9 @@ namespace Rental.WebApi.Features.Deliveryman.Domain.Entities
 
         public Guid? MotorcycleId { get; set; }
         public virtual Motorcycle Motorcycle { get; set; }
+
+        public Guid? RentalId { get; set; }
+        public virtual Rent Rental { get; set; }
 
         public DeliveryMan(string name, string cpf, DateTime birthDate, string cnhNumber, int cnhType, byte[] cnhImage)
         {

@@ -17,8 +17,8 @@ namespace Rental.WebApi.Shared.Data.EntityConfigurations
                 .HasColumnName("IsActive")
                 .IsRequired();
 
-            builder.Property(p => p.CreationDate)
-                .HasColumnName("CreationDate")
+            builder.Property(p => p.InitialDate)
+                .HasColumnName("InitialDate")
                 .IsRequired();
 
             builder.Property(p => p.EndDate)
@@ -33,18 +33,18 @@ namespace Rental.WebApi.Shared.Data.EntityConfigurations
                 .HasColumnName("TotalCost")
                 .IsRequired();
 
-            builder.HasOne(c => c.RentPlan)
+            builder.HasOne(c => c.RentalPlan)
                .WithOne(c => c.Rent)
                .HasForeignKey("LeasePlanId");
 
-            builder.HasOne(c => c.Motorcycle)
-               .WithOne(c => c.Lease)
-               .HasForeignKey("MotorcycleId");
+            builder.HasOne(c => c.Deliveryman)
+               .WithOne(c => c.Rental)
+               .HasForeignKey("RentalId");
 
             builder
                 .HasIndex(v => v.Id).IsUnique();
 
-            builder.ToCollection("Motorcycles");
+            builder.ToCollection("Leases");
         }
     }
 }

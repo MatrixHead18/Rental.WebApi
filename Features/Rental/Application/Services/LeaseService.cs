@@ -72,12 +72,12 @@ namespace Rental.WebApi.Features.Lease.Application.Services
 
             await SetMotorcycleOwner(motorcycle!, deliveryMan);
 
-            var leaseResponse = await ExecuteCreationRentAsync(deliveryMan, request.ExpectedEndDate, cancellationToken);
+            var leaseResponse = await ExecuteCreationRentAsync(deliveryMan, request.InitialDate, request.ExpectedEndDate, cancellationToken);
 
             return leaseResponse;
         }
 
-        private async Task<LeaseResponse> ExecuteCreationRentAsync(DeliveryMan deliveryMan, DateTime expectedEndDate, CancellationToken cancellationToken)
+        private async Task<LeaseResponse> ExecuteCreationRentAsync(DeliveryMan deliveryMan, DateTime initialDate, DateTime expectedEndDate, CancellationToken cancellationToken)
         {
             var executionStrategy = _rentalRepository.UnitOfWork.CreateExecutionStrategy();
 
@@ -87,7 +87,7 @@ namespace Rental.WebApi.Features.Lease.Application.Services
 
                 try
                 {
-                    var rent = new Rent(deliveryMan, expectedEndDate);
+                    var rent = new Rent(deliveryMan, initialDate, expectedEndDate);
 
                     rent.CalculateRentalTotalCost();
 

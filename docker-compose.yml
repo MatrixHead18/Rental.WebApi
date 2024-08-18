@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webapi
+    ports:
+      - "8080:80" 
+    environment:
+      - RABBITMQ_CONNECTION_STRING=amqp://rabbitmq:rabbitmq@rabbitmq:5672/
+      - MONGODB_CONNECTION_STRING=mongodb://mongodb:27017
+    depends_on:
+      - rabbitmq
+      - mongodb
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" 
+      - "15672:15672"  
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"  
+    volumes:
+      - mongo_data:/data/db  
+
+volumes:
+  mongo_data:
+    driver: local

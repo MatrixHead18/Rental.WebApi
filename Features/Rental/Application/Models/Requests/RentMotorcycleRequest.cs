@@ -4,6 +4,7 @@
     {
         public Guid? IdDeliveryMan { get; set; }
         public string LicensePlate { get; set; } = string.Empty;
+        public DateTime InitialDate { get; set; }
         public DateTime ExpectedEndDate { get; set; }
     }
 }

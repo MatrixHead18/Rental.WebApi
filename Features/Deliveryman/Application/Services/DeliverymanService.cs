@@ -42,7 +42,7 @@ namespace Rental.WebApi.Features.Deliveryman.Application.Services
         {
             _logger.LogInformation("Updating a delivery man...");
 
-            var deliveryMan = await _deliveryManRepository.FindByIdAsync(f => f.Id == request.Id, cancellationToken: cancellationToken);
+            var deliveryMan = await _deliveryManRepository.FindByIdAsync(f => f.Id == request.DeliverymanId, cancellationToken: cancellationToken);
 
             if (deliveryMan is null)
             {
@@ -61,7 +61,7 @@ namespace Rental.WebApi.Features.Deliveryman.Application.Services
         {
             using var image = Image.Load(imageBytes);
 
-            IImageFormat format = image.Metadata.DecodedImageFormat;
+            IImageFormat format = image.Metadata.DecodedImageFormat!;
 
             return format.Name switch
             {

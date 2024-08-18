@@ -21,7 +21,7 @@ namespace Rental.WebApi.Shared.Data
         }
 
         public DbSet<Motorcycle> Motorcycles { get; init; }
-        public DbSet<RentPlan> RentalPlans { get; init; }
+        public DbSet<RentalPlan> RentalPlans { get; init; }
         public DbSet<Rent> Rentals { get; init; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,8 +29,9 @@ namespace Rental.WebApi.Shared.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new MotorcycleEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new LeasePlanEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new RentalPlanEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new LeaseEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DeliverymanEntityTypeConfiguration());
         }
 
         public async Task<int> PersistChangesAsync(CancellationToken cancellationToken = default)
@@ -53,7 +54,7 @@ namespace Rental.WebApi.Shared.Data
             var rowsAffected = await PersistChangesAsync(cancellationToken);
 
             if (rowsAffected > 0)
-                await _mediatorHandler.PublicarEvento(this);
+                await _mediatorHandler.PublicarEventos(this);
 
             await transaction.CommitAsync(cancellationToken);
         }
